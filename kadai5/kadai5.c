@@ -6,10 +6,12 @@ int main() {
   scanf("%d", &a);
 
   while (1) {
-    if (b > a) {
-      break;
+    if (b <= a) {
+      printf("%d", b);
+      b = 2 * b;
+      printf(" ");
+      continue;
     }
-    printf("%d ", b);
-    b = 2 * b;
+    break;
   }
 }
