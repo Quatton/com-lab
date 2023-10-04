@@ -26,20 +26,31 @@ async function submitFromInput(input: string) {
   const [_, num] = filename.split("kadai");
 
   const file = readFileSync(`../kadai${num}/kadai${num}.${ext}`);
+  const attachments = [
+    {
+      filename: `kadai${num}.${ext}`,
+      content: file,
+    },
+  ];
+
+  try {
+    const report = readFileSync(`../kadai${num}/report.txt`);
+    attachments.push({
+      filename: `report.txt`,
+      content: report,
+    });
+  } catch (err) {
+    // no report it's ok
+  }
 
   try {
     const data = await resend.emails.send({
       from: "Nutchanon TAECHASUK <n.taechasuk@quattonary.com>",
-      to: "isutbe2023@gmail.com",
+      to: "atomicatives@gmail.com",
       cc: "taechasuk-nutchanon048@g.ecc.u-tokyo.ac.jp",
       subject: `${extension[ext]}${num} 理学部情報科学科 J4220661 タエチャスクナッチャノン`,
       text: "This is an automated submission email. Please contact taechasuk-nutchanon048@g.ecc.u-tokyo.ac.jp.",
-      attachments: [
-        {
-          filename: `kadai${num}.${ext}`,
-          content: file,
-        },
-      ],
+      attachments,
     });
 
     console.log(data.id);
