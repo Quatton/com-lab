@@ -20,12 +20,17 @@ if (input === "a") {
 }
 
 async function submitFromInput(input: string) {
-  const [filename, ext] = input.split(".");
+  const sp = input.split(" ");
+  const f = sp.shift();
+  const [filename, ext] = f!.split(".");
   if (!(ext in extension)) exit();
+
+  const s = sp.shift();
+  const section = s ? s.toUpperCase() : extension[ext];
 
   const [_, num] = filename.split("kadai");
 
-  const file = readFileSync(`../${ext}/kadai${num}/kadai${num}.${ext}`);
+  const file = readFileSync(`../${section}/kadai${num}/kadai${num}.${ext}`);
   const attachments = [
     {
       filename: `kadai${num}.${ext}`,
@@ -34,7 +39,7 @@ async function submitFromInput(input: string) {
   ];
 
   try {
-    const report = readFileSync(`../${ext}/kadai${num}/report.txt`);
+    const report = readFileSync(`../${section}/kadai${num}/report.txt`);
     attachments.push({
       filename: `report.txt`,
       content: report,
@@ -48,7 +53,7 @@ async function submitFromInput(input: string) {
       from: Bun.env.FROM!,
       to: "isutbe2023@gmail.com",
       cc: Bun.env.CC!,
-      subject: `${extension[ext]}${num} ${Bun.env.DETAIL}`,
+      subject: `${section}${num} ${Bun.env.DETAIL}`,
       text: `This is an automated submission email. Please contact ${Bun.env
         .CC!}.`,
       attachments,
