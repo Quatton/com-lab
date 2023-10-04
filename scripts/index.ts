@@ -13,8 +13,8 @@ const input = prompt("Which Kadai?");
 
 if (!input) exit();
 
-if (input === "a") {
-  for (let i = 36; i <= 37; i++) void submitFromInput(`kadai${i}.c`);
+if (input in extension) {
+  for (let i = 33; i <= 40; i++) void submitFromInput(`kadai${i}.${input}`);
 } else {
   void submitFromInput(input);
 }
