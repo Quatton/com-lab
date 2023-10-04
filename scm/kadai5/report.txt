@@ -1,0 +1,32 @@
+理学部情報科学科　J4220661
+タエチャスクナッチャノン
+
+実際に関数「plus-naive」と「plus-tail-rec」を視覚化してみると、
+
+(plus-naive 3 2)
+;a > 0 となるので、
+;(+ 1 (plus-naive (- 3 1) 2))
+;(+ 1 (plus-naive 2 2))
+;(+ 1 (+ 1 (plus-naive (- 2 1) 2)))
+;(+ 1 (+ 1 (plus-naive 1 2)))
+;(+ 1 (+ 1 (+ 1 (plus-naive (- 1 1) 2))))
+;(+ 1 (+ 1 (+ 1 (plus-naive 0 2))))
+;(+ 1 (+ 1 (+ 1 (+ 1 2))))
+;...
+;で、すべての + が評価されてから、最後に 5 が返ってくる。
+
+しかし、
+(plus-tail-rec 3 2)
+;a > 0 となるので、
+;(plus-tail-rec (- 3 1) (+ 2 1))
+;(plus-tail-rec 2 3)
+;続けなくても、tail-rec （または tail-recursive?）の性質により、
+;末尾の + 式が先に評価される。
+;(plus-tail-rec (- 2 1) (+ 3 1))
+;(plus-tail-rec 1 4)
+;(plus-tail-rec (- 1 1) (+ 4 1))
+;(plus-tail-rec 0 5)
+;5
+;明らかに、評価の順番が異なる。
+
+ 
