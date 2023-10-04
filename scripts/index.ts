@@ -14,7 +14,7 @@ const input = prompt("Which Kadai?");
 if (!input) exit();
 
 if (input === "a") {
-  for (let i = 28; i <= 32; i++) void submitFromInput(`kadai${i}.c`);
+  for (let i = 36; i <= 37; i++) void submitFromInput(`kadai${i}.c`);
 } else {
   void submitFromInput(input);
 }
@@ -46,7 +46,7 @@ async function submitFromInput(input: string) {
   try {
     const data = await resend.emails.send({
       from: "Nutchanon TAECHASUK <n.taechasuk@quattonary.com>",
-      to: "atomicatives@gmail.com",
+      to: "isutbe2023@gmail.com",
       cc: "taechasuk-nutchanon048@g.ecc.u-tokyo.ac.jp",
       subject: `${extension[ext]}${num} 理学部情報科学科 J4220661 タエチャスクナッチャノン`,
       text: "This is an automated submission email. Please contact taechasuk-nutchanon048@g.ecc.u-tokyo.ac.jp.",
