@@ -52,6 +52,7 @@ async function submitFromInput(input: string) {
     const data = await resend.emails.send({
       from: Bun.env.FROM!,
       to: "isutbe2023@gmail.com",
+      // to: "atomicatives@gmail.com",
       cc: Bun.env.CC!,
       subject: `${section}${num} ${Bun.env.DETAIL}`,
       text: `This is an automated submission email. Please contact ${Bun.env
