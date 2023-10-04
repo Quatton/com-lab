@@ -45,11 +45,12 @@ async function submitFromInput(input: string) {
 
   try {
     const data = await resend.emails.send({
-      from: "Nutchanon TAECHASUK <n.taechasuk@quattonary.com>",
+      from: Bun.env.FROM!,
       to: "isutbe2023@gmail.com",
-      cc: "taechasuk-nutchanon048@g.ecc.u-tokyo.ac.jp",
-      subject: `${extension[ext]}${num} 理学部情報科学科 J4220661 タエチャスクナッチャノン`,
-      text: "This is an automated submission email. Please contact taechasuk-nutchanon048@g.ecc.u-tokyo.ac.jp.",
+      cc: Bun.env.CC!,
+      subject: `${extension[ext]}${num} ${Bun.env.DETAIL}`,
+      text: `This is an automated submission email. Please contact ${Bun.env
+        .CC!}.`,
       attachments,
     });
 
