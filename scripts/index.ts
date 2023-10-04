@@ -25,7 +25,7 @@ async function submitFromInput(input: string) {
 
   const [_, num] = filename.split("kadai");
 
-  const file = readFileSync(`../kadai${num}/kadai${num}.${ext}`);
+  const file = readFileSync(`..${ext}/kadai${num}/kadai${num}.${ext}`);
   const attachments = [
     {
       filename: `kadai${num}.${ext}`,
@@ -34,7 +34,7 @@ async function submitFromInput(input: string) {
   ];
 
   try {
-    const report = readFileSync(`../kadai${num}/report.txt`);
+    const report = readFileSync(`..${ext}/kadai${num}/report.txt`);
     attachments.push({
       filename: `report.txt`,
       content: report,
