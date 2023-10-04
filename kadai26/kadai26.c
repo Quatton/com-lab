@@ -8,7 +8,7 @@ int main(void) {
 
   char *pa = a, *pb = b;
 
-  while (*pa != '\0' && *pb != '\0') {
+  while (*pa != '\0' || *pb != '\0') {
     if (*pa == '\0' || *pb == '\0' || *pa != *pb) {
       printf("NG");
       return 0;

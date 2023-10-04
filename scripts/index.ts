@@ -14,7 +14,7 @@ const input = prompt("Which Kadai?");
 if (!input) exit();
 
 if (input === "a") {
-  // for (let i = 21; i <= 27; i++) void submitFromInput(`kadai${i}.c`);
+  for (let i = 28; i <= 32; i++) void submitFromInput(`kadai${i}.c`);
 } else {
   void submitFromInput(input);
 }
