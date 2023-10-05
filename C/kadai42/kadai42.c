@@ -7,7 +7,7 @@ struct data {
   int label;  // 0, 1, 2
 };
 
-int distance_2(struct data a, struct data b) {
+float distance_2(struct data a, struct data b) {
   return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
 }
 
@@ -37,17 +37,17 @@ int main() {
 
   fclose(fp);
 
-  int x, y;
-  scanf("%d %d", &x, &y);
+  float x, y;
+  scanf("%f %f", &x, &y);
 
   struct data input = {x, y, -1};
-  int min_distance = -1;
+  float min_distance = -1;
 
   for (int i = 0; i < 100; i++) {
     if (training[i].label == -1) {
       break;
     }
-    int d = distance_2(training[i], input);
+    float d = distance_2(training[i], input);
     if (min_distance == -1 || d < min_distance) {
       min_distance = d;
       input.label = training[i].label;

@@ -29,8 +29,7 @@ int exists_and_pop(char* s, char c) {
   char* p = s;
   while (*p != '\0') {
     if (*p == c) {
-      *p = '\\';  // it's not very cool to abuse the fact that '\' is not in the
-                  // alphabet and probably not in testcase
+      copy(p, p + 1);  // remove the character
       return 1;
     }
     p++;
@@ -44,7 +43,7 @@ int comperm(char* s1, char* s2) {
   }
   char* p1 = s1;
 
-  char* cop = calloc(100, sizeof(char));
+  char cop[100];
   copy(cop, s2);
   while (*p1 != '\0') {
     if (!exists_and_pop(cop, *p1)) {
@@ -52,7 +51,6 @@ int comperm(char* s1, char* s2) {
     }
     p1++;
   }
-  free(cop);
   return 1;
 }
 

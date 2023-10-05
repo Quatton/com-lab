@@ -82,9 +82,9 @@ int main(void) {
   // then they are intersecting
   if (
       // in line a
-      (int_x >= N[0] && int_x <= N[2] && int_x >= N[4] && int_x <= N[6]) &&
+      ((N[0] <= int_x && int_x <= N[2]) || (N[2] <= int_x && int_x <= N[0])) &&
       // in line b
-      (int_x >= N[4] && int_x <= N[6] && int_x >= N[0] && int_x <= N[2])) {
+      ((N[4] <= int_x && int_x <= N[6]) || (N[6] <= int_x && int_x <= N[4]))) {
     printf("OK");
     return 0;
   }
