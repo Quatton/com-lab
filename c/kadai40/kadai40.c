@@ -35,8 +35,8 @@ int main(void) {
   char input[100];
   char output[200];
 
-  // scanf("%s", input);
-  sprintf(input, "ATCG");
+  scanf("%s", input);
+  // sprintf(input, "ATCG");
 
   char* p = input;
   char* q = output;

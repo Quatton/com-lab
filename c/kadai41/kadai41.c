@@ -18,14 +18,15 @@ int main(void) {
   // 6    7
   // xb2, yb2
 
-  // first let's check if these two lines are parallel
-
-  // i use multiplication because things might be zero
-  // and separating those cases are annoying
+  // let's check if these two lines are "possibly" parallel
   float slope_check =
       (N[3] - N[1]) * (N[6] - N[4]) - (N[2] - N[0]) * (N[7] - N[5]);
-  if (slope_check == 0) {
-    // because we don't have to care if these are the same lines
+
+  // or perpendicular
+  float perp_check =
+      (N[3] - N[1]) * (N[6] - N[4]) + (N[2] - N[0]) * (N[7] - N[5]);
+
+  if (slope_check == 0 && perp_check != 0) {
     printf("NG");
     return 0;
   }

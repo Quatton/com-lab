@@ -62,10 +62,9 @@ int main(void) {
   // if we go from left to right, this will be O(n^2)
   // it's fine let's do it
 
-  char* str = "pythonpython";
-  char* str2 = "thpnyopnothh";
-  char* str3 = "pythasdasdonnpytho";
+  char str1[100], str2[100];
 
-  printf("%d\n", comperm(str, str2));
-  printf("%d\n", comperm(str, str3));
+  scanf("%s %s", str1, str2);
+
+  printf("%s\n", comperm(str1, str2) ? "OK" : "NG");
 }
