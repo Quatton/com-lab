@@ -2,11 +2,11 @@
   (lambda (x y)
     (
       if (< x y)
-        (gcd y x)
+        (my-gcd y x)
         (
           if (= 0 (modulo x y))
             y
-            (gcd y (modulo x y))
+            (my-gcd y (modulo x y))
         )
     )
   )

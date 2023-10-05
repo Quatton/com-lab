@@ -7,7 +7,7 @@
 )
 
 (define (my-reverse lst)
-  (reducer () lst)
+  (reducer '() lst)
 )
 
 (my-reverse '(1 2 3 4 5))
