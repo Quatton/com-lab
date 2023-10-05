@@ -1,9 +1,0 @@
-version: "3.8"
-services:
-  ubuntu:
-    image: drujensen/riscv-ubuntu:latest
-    platform: linux/riscv64
-    volumes:
-      - ./ASM:/home/riscv
-
-    working_dir: /home/riscv
