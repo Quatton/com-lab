@@ -7,6 +7,7 @@ const resend = new Resend(Bun.env.RESEND_API_KEY);
 const extension: Record<string, string> = {
   c: "C",
   scm: "S",
+  py: "PY",
 };
 
 const input = prompt("Which Kadai?");

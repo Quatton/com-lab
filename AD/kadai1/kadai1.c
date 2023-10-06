@@ -22,6 +22,10 @@ void Prepend(Node **list, int i) {
 }
 
 void Print(Node **list) {
+  if (*list == NULL) {
+    printf("\n");
+    return;
+  }
   printf("%d", (*list)->number);
   if ((*list)->next != NULL) {
     printf(" ");
@@ -34,17 +38,74 @@ void Print(Node **list) {
 void Delete(Node **list, int i) {
   Node **cur = list;
   int idx = 0;
-  while ((*cur)->next != NULL) {
-    if (i == idx) {
-      // *list =
+  while (*cur != NULL) {
+    if (idx == i) {
+      *cur = (*cur)->next;
+      return;
     }
+    cur = &((*cur)->next);
+    idx++;
   }
 }
 
-int main() {
-  Node *head = NewNode(1);
-  Prepend(&head, 2);
-  Prepend(&head, 3);
+int Count(Node *list) {
+  if (list == NULL) return 0;
+  return 1 + Count(list->next);
+}
 
-  Print(&head);
+void Insert(Node **list, int i, int j) {
+  Node **cur = list;
+
+  if (i == 0) {
+    Prepend(cur, j);
+    return;
+  }
+
+  // prev     curr
+  // 3        2         1
+  //         idx=1
+  Node **prev = cur;
+  cur = &((*cur)->next);
+  int idx = 1;
+  while (*prev != NULL) {
+    if (idx == i) {
+      Node **temp = cur;
+      Prepend(temp, j);
+      (*prev)->next = *temp;
+      return;
+    }
+    prev = cur;
+    cur = &((*cur)->next);
+    idx++;
+  }
+}
+
+// clang-format off
+int main(void){
+  int Q;
+  scanf("%d", &Q);
+  Node *list = NULL;
+
+  for (int i = 0; i < Q; i++){
+    int T;
+    scanf("%d", &T);
+    if (T == 0) {
+      int N;
+      scanf("%d", &N);
+      Prepend(&list, N);
+    } else if (T == 1) {
+      printf("%d\n", Count(list));
+    } else if (T == 2) {
+      int N;
+      scanf("%d", &N);
+      Delete(&list, N);
+    } else if (T == 3) {
+      int N, M;
+      scanf("%d %d", &N, &M);
+      Insert(&list, N, M);
+    } else {
+      Print(&list);
+    }
+  }
+  return 0;
 }
