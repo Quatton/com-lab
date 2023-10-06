@@ -1,56 +1,34 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
 
-void copy(char* to, char* from) {
-  while (*from != '\0') {
-    *to = *from;
-    to++;
-    from++;
-  }
-  *to = '\0';
-}
-
-int eq_len(char* a, char* b) {
-  char* pa = a;
-  char* pb = b;
-
-  while (*pa != '\0' || *pb != '\0') {
-    if (*pa == '\0' || *pb == '\0') {
-      return 0;
-    }
-
-    pa++;
-    pb++;
-  }
-  return 1;
-}
-
-int exists_and_pop(char* s, char c) {
-  char* p = s;
-  while (*p != '\0') {
-    if (*p == c) {
-      copy(p, p + 1);  // remove the character
-      return 1;
-    }
-    p++;
-  }
-  return 0;
-}
-
-int comperm(char* s1, char* s2) {
-  if (!eq_len(s1, s2)) {
+int comperm(char* str1, char* str2) {
+  if (strlen(str1) != strlen(str2)) {
     return 0;
   }
-  char* p1 = s1;
 
-  char cop[100];
-  copy(cop, s2);
-  while (*p1 != '\0') {
-    if (!exists_and_pop(cop, *p1)) {
+  char hash_map[256] = {0};
+  char* reader = str1;
+
+  while (*reader != '\0') {
+    printf("%d\n", (int)*reader);
+    hash_map[(int)*reader]++;
+    reader++;
+  }
+
+  reader = str2;
+  while (*reader != '\0') {
+    printf("%d\n", (int)*reader);
+    hash_map[(int)*reader]--;
+    reader++;
+  }
+
+  for (int i = 0; i < 256; i++) {
+    if (hash_map[i] != 0) {
+      printf("%d\n", hash_map[i]);
       return 0;
     }
-    p1++;
   }
+
   return 1;
 }
 
