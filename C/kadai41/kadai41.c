@@ -64,6 +64,9 @@ int main(void) {
                  (N[2] * N[1] - N[0] * N[3]) * (N[6] - N[4])) /
                 ((N[6] - N[4]) * (N[3] - N[1]) - (N[2] - N[0]) * (N[7] - N[5]));
 
+  float int_y =
+      ((N[3] - N[1]) * int_x + (N[2] * N[1] - N[0] * N[3])) / (N[2] - N[0]);
+
   // just to check if the formula is correct
   // printf("%f\n", int_x);
   // it's correct? wth first try?
@@ -81,10 +84,17 @@ int main(void) {
   // and if the intersection point is in the range of both lines
   // then they are intersecting
   if (
+      // int y
       // in line a
       ((N[0] <= int_x && int_x <= N[2]) || (N[2] <= int_x && int_x <= N[0])) &&
       // in line b
-      ((N[4] <= int_x && int_x <= N[6]) || (N[6] <= int_x && int_x <= N[4]))) {
+      ((N[4] <= int_x && int_x <= N[6]) || (N[6] <= int_x && int_x <= N[4])) &&
+
+      // int y
+      // in line a
+      ((N[1] <= int_y && int_y <= N[3]) || (N[3] <= int_y && int_y <= N[1])) &&
+      // in line b
+      ((N[5] <= int_y && int_y <= N[7]) || (N[7] <= int_y && int_y <= N[5]))) {
     printf("OK");
     return 0;
   }
