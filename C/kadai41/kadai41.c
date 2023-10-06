@@ -1,6 +1,40 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// i got so many runtime errors i gave up
+// https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
+
+typedef struct point {
+  float x;
+  float y;
+} Point;
+
+float orientation(Point p, Point q, Point r) {
+  return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
+}
+
+int check_intersect(Point p1, Point q1, Point p2, Point q2) {
+  // General case
+  if (orientation(p1, q1, p2) * orientation(p1, q1, q2) < 0     // diff orient
+      && orientation(p2, q2, p1) * orientation(p2, q2, q1) < 0  // diff orient
+  ) {
+    return 1;
+  }
+
+  // Special case - but probably won't need because the kadai said so
+  // – (p1, q1, p2), (p1, q1, q2), (p2, q2, p1), and (p2, q2, q1) are all
+  // collinear and – the x-projections of (p1, q1) and (p2, q2) intersect – the
+  // y-projections of (p1, q1) and (p2, q2) intersect
+
+  if (orientation(p1, q1, p2) == 0 && orientation(p1, q1, q2) == 0 &&
+      orientation(p2, q2, p1) == 0 && orientation(p2, q2, q1) == 0 &&
+      p1.x <= p2.x && p2.x <= q1.x && q1.x <= q2.x) {
+    return 1;
+  }
+
+  return 0;
+}
+
 int main(void) {
   float N[8];
 
@@ -8,97 +42,16 @@ int main(void) {
     scanf("%f", &N[i]);
   }
 
-  // table to help me remember the index
-  // 0    1
-  // xa1, ya1
-  // 2    3
-  // xa2, ya2
-  // 4    5
-  // xb1, yb1
-  // 6    7
-  // xb2, yb2
+  Point p1 = {N[0], N[1]};
+  Point q1 = {N[2], N[3]};
+  Point p2 = {N[4], N[5]};
+  Point q2 = {N[6], N[7]};
 
-  // let's check if these two lines are "possibly" parallel
-  float slope_check =
-      (N[3] - N[1]) * (N[6] - N[4]) - (N[2] - N[0]) * (N[7] - N[5]);
-
-  // or perpendicular
-  float perp_check =
-      (N[3] - N[1]) * (N[6] - N[4]) + (N[2] - N[0]) * (N[7] - N[5]);
-
-  if (slope_check == 0 && perp_check != 0) {
-    printf("NG");
-    return 0;
+  if (check_intersect(p1, q1, p2, q2)) {
+    printf("OK\n");
+  } else {
+    printf("NG\n");
   }
 
-  // now let's check if these two lines are intersecting
-  // judging from slope how to check if they are intersecting?
-  /**
-   *     /
-   *    /
-   *   /
-   * /
-   *      \
-   *       \
-   *        \
-   *         \
-   *          \
-   *
-   * as you can see, these lines are not intersecting, because
-   * the intersection point is not in the range of the line
-   * so let's find the intersection point first
-   *
-   * i need to do math
-   * (xa2 - xa1)y = (ya2 - ya1)x + (xa2ya1 - xa1ya2) => * (xb2 - xb1) _1
-   * (xb2 - xb1)y = (yb2 - yb1)x + (xb2yb1 - xb1yb2) => * (xa2 - xa1) _2
-   *
-   * 1 - 2
-   * (xb2 - xb1)(ya2 - ya1)x - (xa2 - xa1)(yb2 - yb1)x + (xa2ya1 - xa1ya2)(xb2 -
-   * xb1) - (xb2yb1 - xb1yb2)(xa2 - xa1) = 0
-   *
-   *
-   * x = (xb2yb1 - xb1yb2)(xa2 - xa1) - (xa2ya1 - xa1ya2)(xb2 - xb1)
-   *    / (xb2 - xb1)(ya2 - ya1) - (xa2 - xa1)(yb2 - yb1)
-   */
-  float int_x = ((N[6] * N[5] - N[4] * N[7]) * (N[2] - N[0]) -
-                 (N[2] * N[1] - N[0] * N[3]) * (N[6] - N[4])) /
-                ((N[6] - N[4]) * (N[3] - N[1]) - (N[2] - N[0]) * (N[7] - N[5]));
-
-  float int_y =
-      ((N[3] - N[1]) * int_x + (N[2] * N[1] - N[0] * N[3])) / (N[2] - N[0]);
-
-  // just to check if the formula is correct
-  // printf("%f\n", int_x);
-  // it's correct? wth first try?
-
-  // table to help me remember the index
-  // 0    1
-  // xa1, ya1
-  // 2    3
-  // xa2, ya2
-  // 4    5
-  // xb1, yb1
-  // 6    7
-  // xb2, yb2
-
-  // and if the intersection point is in the range of both lines
-  // then they are intersecting
-  if (
-      // int y
-      // in line a
-      ((N[0] <= int_x && int_x <= N[2]) || (N[2] <= int_x && int_x <= N[0])) &&
-      // in line b
-      ((N[4] <= int_x && int_x <= N[6]) || (N[6] <= int_x && int_x <= N[4])) &&
-
-      // int y
-      // in line a
-      ((N[1] <= int_y && int_y <= N[3]) || (N[3] <= int_y && int_y <= N[1])) &&
-      // in line b
-      ((N[5] <= int_y && int_y <= N[7]) || (N[7] <= int_y && int_y <= N[5]))) {
-    printf("OK");
-    return 0;
-  }
-
-  printf("NG");
   return 0;
 }
