@@ -6,7 +6,7 @@ def convert_to_2f(x):
 
 
 def main():
-    N = 4
+    N = 3
 
     X = []
     Y = []
