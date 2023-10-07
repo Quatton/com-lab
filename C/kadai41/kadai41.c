@@ -15,22 +15,17 @@ float orientation(Point p, Point q, Point r) {
 
 int check_intersect(Point p1, Point q1, Point p2, Point q2) {
   // General case
-  if (orientation(p1, q1, p2) * orientation(p1, q1, q2) < 0     // diff orient
-      && orientation(p2, q2, p1) * orientation(p2, q2, q1) < 0  // diff orient
-  ) {
+  float o1 = orientation(p1, q1, p2);
+  float o2 = orientation(p1, q1, q2);
+  float o3 = orientation(p2, q2, p1);
+  float o4 = orientation(p2, q2, q1);
+
+  if (o1 * o2 < 0 && o3 * o4 < 0) {
     return 1;
   }
 
-  // Special case - but probably won't need because the kadai said so
-  // – (p1, q1, p2), (p1, q1, q2), (p2, q2, p1), and (p2, q2, q1) are all
-  // collinear and – the x-projections of (p1, q1) and (p2, q2) intersect – the
-  // y-projections of (p1, q1) and (p2, q2) intersect
-
-  if (orientation(p1, q1, p2) == 0 && orientation(p1, q1, q2) == 0 &&
-      orientation(p2, q2, p1) == 0 && orientation(p2, q2, q1) == 0 &&
-      p1.x <= p2.x && p2.x <= q1.x && q1.x <= q2.x) {
-    return 1;
-  }
+  // We don't have to check for collinearity because we're given that the
+  // there are no collinear points
 
   return 0;
 }

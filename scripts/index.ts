@@ -15,7 +15,7 @@ const input = prompt("Which Kadai?");
 if (!input) exit();
 
 if (input in extension) {
-  for (let i = 17; i <= 24; i++) void submitFromInput(`kadai${i}.${input}`);
+  for (let i = 39; i <= 41; i += 2) void submitFromInput(`kadai${i}.${input}`);
 } else {
   void submitFromInput(input);
 }

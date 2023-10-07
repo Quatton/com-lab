@@ -84,7 +84,7 @@ void Insert(Node **list, int i, int j) {
 int main(void){
   int Q;
   scanf("%d", &Q);
-  Node *list = NULL;
+  Node* list = NULL;
 
   for (int i = 0; i < Q; i++){
     int T;

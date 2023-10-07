@@ -3,5 +3,11 @@
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
   "python.formatting.provider": "none",
-  "python.analysis.typeCheckingMode": "basic"
+  "python.analysis.typeCheckingMode": "basic",
+  "files.associations": {
+    "*.page-template": "vue",
+    "*.layout-template": "vue",
+    "*.vue": "vue",
+    "stdlib.h": "c"
+  }
 }
