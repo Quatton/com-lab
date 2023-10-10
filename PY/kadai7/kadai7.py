@@ -1,4 +1,5 @@
-import numpy as np
+# import numpy as np
+# let's not use numpy!
 
 
 def convert_to_2f(x):
@@ -6,22 +7,29 @@ def convert_to_2f(x):
 
 
 def main():
-    m = list(map(int, input().split(" ")))
-    v = list(map(int, input().split(" ")))
+    m = list(map(float, input().split(" ")))
+    v = list(map(float, input().split(" ")))
 
     # 2x2 matrix
-    m = np.matrix(m).reshape(2, 2)
-
-    # 2x1 vector
-    v = np.matrix(v).reshape(2, 1)
+    m = [[m[0], m[1]], [m[2], m[3]]]
 
     # x = m^-1 * v
-    # https://numpy.org/doc/stable/reference/generated/numpy.linalg.inv.html
-    m_inv = np.linalg.inv(m)
+    # m^-1 = [[d, -b], [-c, a]] / (ad - bc)
+    m_inv = [[m[1][1], -m[0][1]], [-m[1][0], m[0][0]]]
+    det = m[0][0] * m[1][1] - m[0][1] * m[1][0]
 
-    x = np.matmul(m_inv, v)
+    # i should've converted that to a matrix
+    for i in range(len(m_inv)):
+        for j in range(len(m_inv[0])):
+            m_inv[i][j] /= det
 
-    print("\n".join(map(convert_to_2f, x.flatten().tolist()[0])))
+    x = [
+        # 0 * 0 + 1 * 1
+        m_inv[0][0] * v[0] + m_inv[0][1] * v[1],
+        m_inv[1][0] * v[0] + m_inv[1][1] * v[1],
+    ]
+
+    print("\n".join(map(convert_to_2f, x)))
 
 
 if __name__ == "__main__":

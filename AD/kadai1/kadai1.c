@@ -40,7 +40,9 @@ void Delete(Node **list, int i) {
   int idx = 0;
   while (*cur != NULL) {
     if (idx == i) {
-      *cur = (*cur)->next;
+      Node **temp = cur;
+      *cur = (*temp)->next;
+      free(*temp);
       return;
     }
     cur = &((*cur)->next);
