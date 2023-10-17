@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 void convert_to_base2(float dec) {
   int *d = (int *)&dec;
@@ -18,8 +19,18 @@ int main() {
   // 1 sign bit | 8 exponent bit | 23 fraction bits
 
   float dec;
+  char buf[256];
 
-  scanf("%e", &dec);
+  fgets(buf, sizeof(buf), stdin);
+
+  // is the input "NaN"?
+  if (strcmp(buf, "NaN") == 0) {
+    dec = 0.0f / 0.0f;
+  } else if (strcmp(buf, "inf") == 0) {
+    dec = 1.0f / 0.0f;
+  } else {
+    sscanf(buf, "%f", &dec);
+  }
 
   convert_to_base2(dec);
 }
