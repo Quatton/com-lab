@@ -8,7 +8,14 @@
             (+ (sq j) (sq i))
           )))
     (cons-stream
-      triples
+      (if (< (- (sq j) (sq i)) (* (* i j) 2)) 
+        triples
+        (list 
+            (* (* i j) 2) 
+            (- (sq j) (sq i)) 
+            (+ (sq j) (sq i))
+          )
+      )
       (if (< (+ i 1) j)
           (create-triples (+ i 1) j)
           (create-triples 1 (+ 1 j))
