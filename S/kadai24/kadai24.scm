@@ -1,21 +1,18 @@
 (import (rnrs) (srfi :41))
 
-(define (triples s t u)
-  (list->stream (list s t u)))
-
 (define (sq x) (* x x))
 
 (define (create-triples i j)
-  (let ((tr
-          (triples 
+  (let ((triples;=
+          (list 
             (- (sq j) (sq i)) 
             (* (* i j) 2) 
             (+ (sq j) (sq i))
           )))
     (stream-cons
       (if (< (- (sq j) (sq i)) (* (* i j) 2)) 
-        tr
-        (triples
+        triples
+        (list 
             (* (* i j) 2) 
             (- (sq j) (sq i)) 
             (+ (sq j) (sq i))
@@ -34,3 +31,6 @@
 (stream-ref pythagorean-triples 1)
 (stream-ref pythagorean-triples 2)
 (stream-ref pythagorean-triples 3)
+(stream-ref pythagorean-triples 4)
+(stream-ref pythagorean-triples 5)
+(stream-ref pythagorean-triples 6)
