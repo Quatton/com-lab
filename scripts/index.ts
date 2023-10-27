@@ -8,6 +8,7 @@ const extension: Record<string, string> = {
   c: "C",
   scm: "S",
   py: "PY",
+  s: "ASM",
 };
 
 const input = prompt("Which Kadai?");
