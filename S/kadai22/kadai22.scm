@@ -6,7 +6,7 @@
 
 (define (my-stream-map f st)
   (if (stream-null? st)
-      stream; empty stream
+      (stream); empty stream
       (cons-stream (f (stream-car st)) ;would do the same with list
                   (my-stream-map f (stream-cdr st)))))
 

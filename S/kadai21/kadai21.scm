@@ -1,14 +1,10 @@
-(define egg (list->stream '(1 2 3 4)))
-
 (define (my-stream-map f st)
   (if (stream-null? st)
       (stream); empty stream
       (cons-stream (f (stream-car st)) ;would do the same with list
-                  (my-stream-map f (stream-cdr st)))))
+          (my-stream-map f (stream-cdr st)))))
 
-(define egg-map (my-stream-map (lambda (x) (* x x)) egg))
+(define squared_s (my-stream-map square (list->stream (list 1 2 3 4))))
+(stream-car squared_s)
+(stream-ref squared_s 2)
 
-(stream-car egg-map)
-(stream-ref egg-map 2)
-(stream-ref egg-map 3)
-(stream-ref egg-map 4)
