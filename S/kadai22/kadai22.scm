@@ -1,3 +1,5 @@
+(import (rnrs) (srfi :41))
+
 (define (stream-reducer acc curr f)
   (cond ((stream-null? curr) acc)
         (else (stream-reducer (f acc (stream-car curr)) (stream-cdr curr) f))
@@ -6,8 +8,8 @@
 
 (define (my-stream-map f st)
   (if (stream-null? st)
-      (stream); empty stream
-      (cons-stream (f (stream-car st)) ;would do the same with list
+      stream-null; empty stream
+      (stream-cons (f (stream-car st)) ;would do the same with list
                   (my-stream-map f (stream-cdr st)))))
 
 
@@ -21,8 +23,8 @@
 
 (define (partial-sums-helper s acc)
   (if (stream-null? s) 
-    stream
-    (cons-stream (+ acc (stream-car s))
+    stream-null
+    (stream-cons (+ acc (stream-car s))
                 (partial-sums-helper (stream-cdr s) (+ acc (stream-car s)))
     )
   )

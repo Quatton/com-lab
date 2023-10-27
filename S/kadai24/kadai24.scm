@@ -1,3 +1,5 @@
+(import (rnrs) (srfi :41))
+
 (define (sq x) (* x x))
 
 (define (create-triples i j)
@@ -7,7 +9,7 @@
             (* (* i j) 2) 
             (+ (sq j) (sq i))
           )))
-    (cons-stream
+    (stream-cons
       (if (< (- (sq j) (sq i)) (* (* i j) 2)) 
         triples
         (list 
