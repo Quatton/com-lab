@@ -1,11 +1,11 @@
 	.globl swap_gt
 
 swap_gt:
-  
-  bgt a0, a1, .swap
+  lw a3, 0(a0) # load x to a3
+  lw a4, 0(a1) # load y to a4
+  bgt a3, a4, .swap # *x > *y
 
 .swap:
-  mv a2, a1
-  mv a1, a0
-  mv a0, a2
+  sw a4, 0(a0) # *x -> 
+  sw a3, 0(a1) # *y -> 
   ret
