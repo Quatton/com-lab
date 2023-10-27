@@ -1,11 +1,13 @@
 	.globl swap_gt
 
-swap_gt:
+swap_gt: # void swap_gt(int *x, int *y)
+  lw a3, 0(a0) # a3 = *x
+  lw a4, 0(a1) # a4 = *y
   
-  bgt a0, a1, .swap
+  # if (a3 > a4) swap()
+  blt a3, a4, .no_swap
+  sw a4, 0(a0) # *x = a4
+  sw a3, 0(a1) # *y = a3
 
-.swap:
-  mv a2, a1
-  mv a1, a0
-  mv a0, a2
-  ret
+.no_swap:
+  jr ra

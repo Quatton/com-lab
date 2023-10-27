@@ -22,18 +22,18 @@ swap_gt:
 	# ^s0
 
 
-	ld	a5,-40(s0) # load a0 to a5
-	lw	a4,0(a5) # load 
-	ld	a5,-48(s0) # load 
-	lw	a5,0(a5)
+	ld	a5,-40(s0) # load x to a5
+	lw	a4,0(a5) # load x to a4
+	ld	a5,-48(s0) # load y to a5
+	lw	a5,0(a5) # load y to a5
 	ble	a4,a5,.L3
-	ld	a5,-40(s0)
-	lw	a5,0(a5)
-	sw	a5,-20(s0)
-	ld	a5,-48(s0)
-	lw	a4,0(a5)
-	ld	a5,-40(s0)
-	sw	a4,0(a5)
+	ld	a5,-40(s0) # load x to a5
+	lw	a5,0(a5) # load x to a5
+	sw	a5,-20(s0) # store x to that
+	ld	a5,-48(s0) # load y to a5
+	lw	a4,0(a5) # laod *y to a4
+	ld	a5,-40(s0) # load x to a5
+	sw	a4,0(a5) # store *y to *a5
 	ld	a5,-48(s0)
 	lw	a4,-20(s0)
 	sw	a4,0(a5)
