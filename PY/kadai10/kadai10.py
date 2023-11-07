@@ -162,7 +162,7 @@ def main():
 
     (a, b, r) = solve_eq(X, Y)
 
-    print(f"{a:.2f} {b:.2f} {r:.2f}")
+    print(f"{a} {b} {r}")
 
 
 if __name__ == "__main__":
