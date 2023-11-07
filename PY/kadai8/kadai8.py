@@ -1,8 +1,7 @@
-# import numpy as np
-# let's not use numpy
+import numpy as np
 
 
-def convert_to_2f(x: float):
+def convert_to_2f(x):
     converted = f"{x:.2f}"
     # idk why python have -0.00
     # but i don't want it
@@ -16,10 +15,10 @@ def convert_to_2f(x: float):
 # because dealing with matrices is really mentally taxing
 # i often make mistakes when indexing a deeply nested list
 # so i type my functions to make sure i don't make mistakes
-# spoiler: i stil do
+# spoiler stil do
 
 
-def reshape(arr: list[float], m: int, n: int) -> list[list[float]]:
+def reshape(arr, m, n):
     new_arr = [[0.0 for _ in range(n)] for _ in range(m)]
     for i in range(m):
         for j in range(n):
@@ -29,14 +28,14 @@ def reshape(arr: list[float], m: int, n: int) -> list[list[float]]:
     return new_arr
 
 
-def minor(m: list[list[float]], i: int, j: int) -> list[list[float]]:
+def minor(m, i, j):
     # without the ith row and jth column
     new = [row[:j] + row[j + 1 :] for row in m[:i] + m[i + 1 :]]
 
     return new
 
 
-def adj_mat(m: list[list[float]]) -> list[list[float]]:
+def adj_mat(m):
     # (-1)^(i + j) * det(minor(m, i, j))
     # but i secretly swap i and j
     new = [
@@ -47,7 +46,7 @@ def adj_mat(m: list[list[float]]) -> list[list[float]]:
     return new
 
 
-def det(m: list[list[float]]) -> float:
+def det(m):
     # probably recursion?
     n_rows = len(m)
 
@@ -63,18 +62,20 @@ def det(m: list[list[float]]) -> float:
     return sum([m[0][j] * det(minor(m, 0, j)) * (-1) ** j for j in range(n_rows)])
 
 
-def transpose(m: list[list[float]]) -> list[list[float]]:
+def transpose(m):
     # swap rows and columns
     new = [[m[j][i] for j in range(len(m))] for i in range(len(m[0]))]
 
     return new
 
 
-def flatten(m: list[list[float]]) -> list[float]:
+def flatten(m):
     return [m[i][j] for i in range(len(m)) for j in range(len(m[0]))]
 
 
-def inverse(m: list[list[float]]) -> list[list[float]]:
+def Inv_x(m_np):
+    m = m_np.tolist()
+
     det_m = det(m)
     adj_m = adj_mat(m)
 
@@ -85,16 +86,16 @@ def inverse(m: list[list[float]]) -> list[list[float]]:
         for i in range(len(adj_m))
     ]
 
-    return m_inv
+    return np.array(m_inv)
 
 
 def main():
-    m = list(map(float, input().split(" ")))
-    m = reshape(m, 3, 3)
-
-    m_inv = inverse(m)
-
-    print(" ".join(map(convert_to_2f, flatten(m_inv))))
+    x_info = list(map(int, input().split(" ")))
+    x = np.array(x_info).reshape(3, 3)
+    result = Inv_x(x)
+    for i in range(result.shape[0]):
+        for j in range(result.shape[1]):
+            print(f"{result[i,j]:.3f}")
 
 
 if __name__ == "__main__":
