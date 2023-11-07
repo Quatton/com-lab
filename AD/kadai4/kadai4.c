@@ -45,11 +45,14 @@ void Print(Node** list) {
 
 void Delete(Node** list, int i) {
   Node** cur = list;
+  Node* temp;
   int idx = 0;
   while (*cur != NULL) {
     if (idx == i) {
-      Node** temp = cur;
+      temp = *cur;
       *cur = (*cur)->next;
+      free(temp->key);
+      free(temp->value);
       free(temp);
       return;
     }
@@ -123,6 +126,20 @@ Node** CreateTable(void) {
   return hash_table;
 }
 
+void CleanUp(Node** table) {
+  for (int i = 0; i < SIZE; i++) {
+    Node* cur = table[i];
+    while (cur != NULL) {
+      Node* next = cur->next;
+      free(cur->key);
+      free(cur->value);
+      free(cur);
+      cur = next;
+    }
+  }
+  free(table);
+}
+
 void Set(Node** hash_table, char* key, char* value) {
   // get the hashed key
   unsigned int hashed_key = hash(key);
@@ -141,11 +158,15 @@ void Set(Node** hash_table, char* key, char* value) {
 
   if (res == NULL) {
     Prepend(&cur, key, value);
+    hash_table[hashed_key] = cur;
     return;
   }
 
   // else update
-  strcpy(cur->value, value);
+  char* new_value = (char*)malloc(strlen(value) + 1);
+  strcpy(new_value, value);
+  free((*res)->value);
+  (*res)->value = new_value;
 }
 
 char* Get(Node** hash_table, char* key) {
@@ -203,22 +224,24 @@ void DeleteItem(Node** hash_table, char* key) {
   }
 
   // else remove it
-
   Delete(res, 0);
+
+  // update the hash table
+  hash_table[hashed_key] = cur;
 }
 
 int main(void) {
   Node** fruits = CreateTable();
 
   while (1) {
-    char* buf = malloc(256);
+    char buf[256];
     // get from stdin with fgets
-    if (!fgets(buf, 256, stdin)) {
+    if (!fgets(buf, sizeof(buf), stdin)) {
       return 1;
     }
 
     char cmd[256];
-    sscanf(buf, "%[^\n]s", cmd);
+    sscanf(buf, "%[^\n]", cmd);
 
     char* cmds[3] = {NULL, NULL, NULL};
 
@@ -226,18 +249,18 @@ int main(void) {
     load_cmd(cmds, cmd);
 
     if (strcmp(cmds[0], "quit") == 0) {
-      return 0;
+      break;
     }
 
-    if (strcmp(cmds[0], "insert") == 0) {
+    if (strcmp(cmds[0], "insert") == 0 && cmds[1] != NULL && cmds[2] != NULL) {
       Set(fruits, cmds[1], cmds[2]);
     }
 
-    if (strcmp(cmds[0], "delete") == 0) {
+    if (strcmp(cmds[0], "delete") == 0 && cmds[1] != NULL) {
       DeleteItem(fruits, cmds[1]);
     }
 
-    if (strcmp(cmds[0], "search") == 0) {
+    if (strcmp(cmds[0], "search") == 0 && cmds[1] != NULL) {
       char* res = Get(fruits, cmds[1]);
       if (res != NULL) {
         printf("%s\n", res);
@@ -247,4 +270,6 @@ int main(void) {
       }
     }
   }
+
+  CleanUp(fruits);
 }
