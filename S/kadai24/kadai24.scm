@@ -1,36 +1,26 @@
-(import (rnrs) (srfi :41))
+(define triple-index
+  (stream-cons (list 1 1 1)
+    (stream-map
+      (lambda (x)
+        (let ((i (car x)) (j (cadr x)) (k (caddr x)))
+          ;i++ したい jで抑えられている
+          (if (< i j)
+            ;then ok
+            (list (+ i 1) j k)
+            ;j++ first, but kで抑えられている
+            (if (< j k)
+              ;then ok
+              (list i (+ j 1) k)
+              ;then k++ first
+              (list i k (+ k 1 ))
+            )
 
-(define (triples s t u)
-  (list->stream (list s t u)))
-
-(define (sq x) (* x x))
-
-(define (create-triples i j)
-  (let ((tr
-          (triples 
-            (- (sq j) (sq i)) 
-            (* (* i j) 2) 
-            (+ (sq j) (sq i))
-          )))
-    (stream-cons
-      (if (< (- (sq j) (sq i)) (* (* i j) 2)) 
-        tr
-        (triples
-            (* (* i j) 2) 
-            (- (sq j) (sq i)) 
-            (+ (sq j) (sq i))
           )
+        )
       )
-      (if (< (+ i 1) j)
-          (create-triples (+ i 1) j)
-          (create-triples 1 (+ 1 j))
-      ))
+      triple-index
+    )
   )
 )
 
-(define pythagorean-triples (create-triples 1 2))
-
-(stream-ref pythagorean-triples 0)
-(stream-ref pythagorean-triples 1)
-(stream-ref pythagorean-triples 2)
-(stream-ref pythagorean-triples 3)
+(stream-ref triple-index 1)
