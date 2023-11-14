@@ -1,0 +1,1 @@
+gcc -fsanitize=address kadai4.c -o fruits; ./fruits < input.txt

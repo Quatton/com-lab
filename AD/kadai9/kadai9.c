@@ -1,3 +1,4 @@
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -200,6 +201,20 @@ void dijk(int** graph, int start, int end, Node** node, char** name_lookup) {
   free(lookup);
 }
 
+void FreeNode(Node** node) {
+  if (*node == NULL) {
+    return;
+  }
+
+  if ((*node)->next != NULL) {
+    FreeNode(&((*node)->next));
+  }
+
+  free((*node)->value);
+  free(*node);
+  *node = NULL;
+}
+
 int main(void) {
   char filename[50];
 
@@ -259,6 +274,8 @@ int main(void) {
   dijk(graph, start, end, &path, name_look_up);
 
   Print(&path);
+
+  FreeNode(&path);
 
   free_table(name_look_up, graph);
 }

@@ -22,27 +22,27 @@ void Prepend(Node **list, int i) {
 }
 
 void Print(Node **list) {
-  if (*list == NULL) {
-    printf("\n");
-    return;
-  }
-  printf("%d", (*list)->number);
-  if ((*list)->next != NULL) {
-    printf(" ");
-    Print(&((*list)->next));
-  } else {
-    printf("\n");
+  Node *current = *list;
+  while (current != NULL) {
+    printf("%d", current->number);
+    if (current->next != NULL) {
+      printf(" ");
+    } else {
+      printf("\n");
+    }
+    current = current->next;
   }
 }
 
 void Delete(Node **list, int i) {
   Node **cur = list;
+  Node *temp;
   int idx = 0;
   while (*cur != NULL) {
     if (idx == i) {
-      Node **temp = cur;
-      *cur = (*temp)->next;
-      free(*temp);
+      temp = *cur;
+      *cur = (*cur)->next;
+      free(temp);
       return;
     }
     cur = &((*cur)->next);
