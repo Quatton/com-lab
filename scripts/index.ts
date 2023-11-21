@@ -32,13 +32,18 @@ async function submitFromInput(input: string) {
 
   const [_, num] = filename.split("kadai");
 
-  const file = readFileSync(`../${section}/kadai${num}/kadai${num}.${ext}`);
-  const attachments = [
-    {
+  const attachments: Parameters<typeof resend.emails.send>[0]["attachments"] =
+    [];
+
+  try {
+    const file = readFileSync(`../${section}/kadai${num}/kadai${num}.${ext}`);
+    attachments.push({
       filename: `kadai${num}.${ext}`,
       content: file,
-    },
-  ];
+    });
+  } catch (err) {
+    // no file it's ok
+  }
 
   try {
     const report = readFileSync(`../${section}/kadai${num}/report.txt`);
