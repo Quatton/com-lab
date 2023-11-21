@@ -25,7 +25,11 @@ int main(void) {
   Tree *head = NULL;
   int idx = 0;
 
-  while ((c = getchar()) != '\n') {
+  char buf[1000];
+
+  fgets(buf, sizeof(buf), stdin);
+
+  while ((c = buf[idx]) != '\0') {
     if (c == '(') {
       // put in the stack
       Tree *new = malloc(sizeof(Tree));
@@ -43,5 +47,11 @@ int main(void) {
     }
 
     idx++;
+  }
+
+  for (Tree *p = head; p != NULL;) {
+    Tree *next = p->prev;
+    free(p);
+    p = next;
   }
 }
