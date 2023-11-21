@@ -8,14 +8,14 @@
 // copied from kadai1
 typedef struct node {
   char* value;
-  struct node* next;
+  struct node* less;
 } Node;
 
 Node* NewNode(char* value) {
   Node* head = (Node*)malloc(sizeof(Node));
   head->value = malloc(strlen(value) + 1);
   strcpy(head->value, value);
-  head->next = NULL;
+  head->less = NULL;
 
   return head;
 }
@@ -24,7 +24,7 @@ void Prepend(Node** list, char* value) {
   Node* new = (Node*)malloc(sizeof(Node));
   new->value = malloc(strlen(value) + 1);
   strcpy(new->value, value);
-  new->next = *list;
+  new->less = *list;
   *list = new;
   // printf("%s\n", new->value);
 }
@@ -35,8 +35,8 @@ void Print(Node** list) {
     return;
   }
   printf("%s\n", (*list)->value);
-  if ((*list)->next != NULL) {
-    Print(&((*list)->next));
+  if ((*list)->less != NULL) {
+    Print(&((*list)->less));
   }
 }
 
@@ -206,8 +206,8 @@ void FreeNode(Node** node) {
     return;
   }
 
-  if ((*node)->next != NULL) {
-    FreeNode(&((*node)->next));
+  if ((*node)->less != NULL) {
+    FreeNode(&((*node)->less));
   }
 
   free((*node)->value);

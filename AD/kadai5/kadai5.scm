@@ -65,7 +65,7 @@
           (let ((m (btree-min r)))
             (list m (cadr t) (btree-delete (car m) r))
           )
-        )
+        ) 
       )
     )
 

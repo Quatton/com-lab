@@ -19,7 +19,7 @@
 ;(newline)
 ;ok
 
-(define (quicksort lst)
+(define (my-sort lst)
   (if (null? lst)
       '()
     ;we learnt in the DSA course
@@ -32,12 +32,12 @@
            (right (cdr partitioned)))
       
       ;so now let's append left and right
-      (append (quicksort left) (cons pivot (quicksort right)))
+      (append (my-sort left) (cons pivot (my-sort right)))
     )
   )
 )
 
 ;test
-; (write (quicksort '("a" "c" "j" "b" "d" "g" "e" "f" "h" "i")))
-; (newline)
+(write (my-sort '("a" "a" "jphn" "b" "d" "g" "e" "f" "h" "i")))
+(newline)
       

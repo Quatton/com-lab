@@ -3,13 +3,13 @@
 
 typedef struct node {
   int number;
-  struct node *next;
+  struct node *less;
 } Node;
 
 Node *NewNode(int i) {
   Node *head = (Node *)malloc(sizeof(Node));
   head->number = i;
-  head->next = NULL;
+  head->less = NULL;
 
   return head;
 }
@@ -17,7 +17,7 @@ Node *NewNode(int i) {
 void Prepend(Node **list, int i) {
   Node *new = (Node *)malloc(sizeof(Node));
   new->number = i;
-  new->next = *list;
+  new->less = *list;
   *list = new;
 }
 
@@ -25,12 +25,12 @@ void Print(Node **list) {
   Node *current = *list;
   while (current != NULL) {
     printf("%d", current->number);
-    if (current->next != NULL) {
+    if (current->less != NULL) {
       printf(" ");
     } else {
       printf("\n");
     }
-    current = current->next;
+    current = current->less;
   }
 }
 
@@ -41,18 +41,18 @@ void Delete(Node **list, int i) {
   while (*cur != NULL) {
     if (idx == i) {
       temp = *cur;
-      *cur = (*cur)->next;
+      *cur = (*cur)->less;
       free(temp);
       return;
     }
-    cur = &((*cur)->next);
+    cur = &((*cur)->less);
     idx++;
   }
 }
 
 int Count(Node *list) {
   if (list == NULL) return 0;
-  return 1 + Count(list->next);
+  return 1 + Count(list->less);
 }
 
 void Insert(Node **list, int i, int j) {
@@ -67,17 +67,17 @@ void Insert(Node **list, int i, int j) {
   // 3        2         1
   //         idx=1
   Node **prev = cur;
-  cur = &((*cur)->next);
+  cur = &((*cur)->less);
   int idx = 1;
   while (*prev != NULL) {
     if (idx == i) {
       Node **temp = cur;
       Prepend(temp, j);
-      (*prev)->next = *temp;
+      (*prev)->less = *temp;
       return;
     }
     prev = cur;
-    cur = &((*cur)->next);
+    cur = &((*cur)->less);
     idx++;
   }
 }

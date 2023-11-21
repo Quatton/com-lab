@@ -2,55 +2,18 @@
 
   ;; スタック`st'の先頭に`val'を追加して、
   (set! st (cons val st))
-
   st
-) 
+  ) 
 
 (define (stack-read st)
 
   ;; スタック`st'の先頭の要素を返す。
   (car st)
-)
+  )
 
 (define (stack-pop st)
 
   ;; スタック`st'から先頭の要素を取り除いたスタックを返す。
   (set! st (cdr st))
   st
-)
-
-(define (calc-add st)
-
-  ;grab the first two elements
-  (let ((a (stack-read st))
-        (b (stack-read (stack-pop st)))
-        (rest (stack-pop (stack-pop st))))
-      
-    ;add them together and push the result
-    (stack-push rest (+ a b))
   )
-)
-
-(define (calc-sub st)
-
-  ;grab the first two elements
-  (let ((a (stack-read st))
-        (b (stack-read (stack-pop st)))
-        (rest (stack-pop (stack-pop st))))
-      
-    ;add them together and push the result
-    (stack-push rest (- b a))
-  )
-)
-
-(define (calc-mul st)
-
-  ;grab the first two elements
-  (let ((a (stack-read st))
-        (b (stack-read (stack-pop st)))
-        (rest (stack-pop (stack-pop st))))
-      
-    ;add them together and push the result
-    (stack-push rest (* a b))
-  )
-)

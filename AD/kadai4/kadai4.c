@@ -2,193 +2,154 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define SIZE 20
-
-// https://www.digitalocean.com/community/tutorials/hash-table-in-c-plus-plus
-// just in case the bucket runs into a collision we will use a linked list
-typedef struct hash_node {
+typedef struct tree_node {
   char* key;
   char* value;
-  struct hash_node* next;
-} Node;
+  struct tree_node* left;
+  struct tree_node* right;
+} Tree;
 
-Node* NewNode(char* key, char* value) {
-  Node* head = (Node*)malloc(sizeof(Node));
-  head->key = (char*)malloc(strlen(key) + 1);
-  head->value = (char*)malloc(strlen(value) + 1);
-  strcpy(head->key, key);
-  strcpy(head->value, value);
-  head->next = NULL;
+void setstr(char** dest, char* src) {
+  *dest = (char*)malloc(strlen(src) + 1);
+  strcpy(*dest, src);
+}
+
+Tree* NewNode(char* key, char* value) {
+  Tree* head = (Tree*)malloc(sizeof(Tree));
+  setstr(&(head->key), key);
+  setstr(&(head->value), value);
+  head->left = NULL;
+  head->right = NULL;
 
   return head;
 }
 
-void Prepend(Node** list, char* key, char* value) {
-  Node* new = NewNode(key, value);
-  new->next = *list;
-  *list = new;
-}
+void Set(Tree** root, char* key, char* value) {
+  // if the root is null, create a new node
+  if (*root == NULL) {
+    *root = NewNode(key, value);
+  }
 
-void Print(Node** list) {
-  if (*list == NULL) {
-    printf("\n");
+  // now let the fun begin
+  // first compare the key with the root
+  int cmp = strcmp(key, (*root)->key);
+
+  if (cmp == 0) {
+    // we will update the value
+
+    free((*root)->value);  // this is the lesson i learned last time. i didn't
+                           // free the old value when i updated the value
+
+    setstr(&((*root)->value), value);
     return;
   }
-  printf("%s: %s", (*list)->key, (*list)->value);
-  if ((*list)->next != NULL) {
-    printf(" ");
-    Print(&((*list)->next));
-  } else {
-    printf("\n");
+
+  if (cmp < 0) {
+    // we will set the left tree
+    Set(&((*root)->left), key, value);
+    return;
+  }
+
+  if (cmp > 0) {
+    // we will set the right tree
+    Set(&((*root)->right), key, value);
+    return;
   }
 }
 
-void Delete(Node** list, int i) {
-  Node** cur = list;
-  Node* temp;
-  int idx = 0;
-  while (*cur != NULL) {
-    if (idx == i) {
-      temp = *cur;
-      *cur = (*cur)->next;
-      free(temp->key);
-      free(temp->value);
+Tree* DeleteMin(Tree** root) {
+  if (*root == NULL) {
+    return NULL;
+  }
+
+  if ((*root)->left == NULL) {
+    // this is the min
+    Tree* temp = *root;
+    *root = (*root)->right;
+    return temp;
+  }
+
+  return DeleteMin(&((*root)->left));
+}
+
+void DeleteItem(Tree** root, char* key) {
+  int cmp = strcmp(key, (*root)->key);
+
+  if (cmp == 0) {
+    // this is kinda tricky i don't like it
+
+    if ((*root)->right) {
+      // if the right tree exists, we will delete the min of the right tree
+      Tree* rmin = DeleteMin(&((*root)->right));
+
+      // then we reset the whole tree
+      rmin->left = (*root)->left;
+      rmin->right = (*root)->right;
+
+      // then we free the root value
+      free((*root)->key);
+      free((*root)->value);
+
+      Tree* temp = *root;
+
+      // now this is the new root
+      *root = rmin;
+
       free(temp);
+
       return;
     }
-    cur = &((*cur)->next);
-    idx++;
-  }
-}
 
-int Count(Node* list) {
-  if (list == NULL) return 0;
-  return 1 + Count(list->next);
-}
+    // if not, we will just delete the root
+    Tree* temp = *root;
+    *root = (*root)->left;
+    free(temp->key);
+    free(temp->value);
+    free(temp);
 
-void Insert(Node** list, int i, char* key, char* value) {
-  Node** cur = list;
-
-  if (i == 0) {
-    Prepend(cur, key, value);
     return;
   }
 
-  // prev     curr
-  // 3        2         1
-  //         idx=1
-  Node** prev = cur;
-  cur = &((*cur)->next);
-  int idx = 1;
-  while (*prev != NULL) {
-    if (idx == i) {
-      Node** temp = cur;
-      Prepend(temp, key, value);
-      (*prev)->next = *temp;
-      return;
-    }
-    prev = cur;
-    cur = &((*cur)->next);
-    idx++;
+  if (cmp < 0) {
+    // we will set the left tree
+    DeleteItem(&((*root)->left), key);
+    return;
+  } else {
+    // we will set the right tree
+    DeleteItem(&((*root)->right), key);
+    return;
   }
 }
 
-Node** Search(Node** list, char* key) {
-  Node** cur = list;
-  while (*cur != NULL) {
-    if (strcmp((*cur)->key, key) == 0) {
-      return cur;
-    }
-    cur = &((*cur)->next);
-  }
-  return NULL;
-}
-
-unsigned int hash(char* key) {
-  unsigned int hash_value = 0;
-  int key_length = strlen(key);
-
-  for (int i = 0; i < key_length; i++) {
-    hash_value = hash_value * 37 + key[i];
-  }  // basically a base 37 number
-
-  hash_value = hash_value % SIZE;
-
-  return hash_value;
-}
-
-Node** CreateTable(void) {
-  // array of pointers to nodes
-  Node** hash_table = calloc(SIZE, sizeof(Node*));
-
-  for (int i = 0; i < SIZE; i++) hash_table[i] = NULL;
-
-  return hash_table;
-}
-
-void CleanUp(Node** table) {
-  for (int i = 0; i < SIZE; i++) {
-    Node* cur = table[i];
-    while (cur != NULL) {
-      Node* next = cur->next;
-      free(cur->key);
-      free(cur->value);
-      free(cur);
-      cur = next;
-    }
-  }
-  free(table);
-}
-
-void Set(Node** hash_table, char* key, char* value) {
-  // get the hashed key
-  unsigned int hashed_key = hash(key);
-
-  // check if the key exists
-  Node* cur = hash_table[hashed_key];
-
-  if (cur == NULL) {
-    Node* new = NewNode(key, value);
-    hash_table[hashed_key] = new;
+void CleanUp(Tree** tree) {
+  if (*tree == NULL) {
     return;
   }
 
-  // if it does, find if the key inside the linked list exists
-  Node** res = Search(&cur, key);
+  CleanUp(&((*tree)->left));
+  CleanUp(&((*tree)->right));
 
-  if (res == NULL) {
-    Prepend(&cur, key, value);
-    hash_table[hashed_key] = cur;
-    return;
-  }
-
-  // else update
-  char* new_value = (char*)malloc(strlen(value) + 1);
-  strcpy(new_value, value);
-  free((*res)->value);
-  (*res)->value = new_value;
+  free((*tree)->key);
+  free((*tree)->value);
+  free(*tree);
 }
 
-char* Get(Node** hash_table, char* key) {
-  // get the hashed key
-  unsigned int hashed_key = hash(key);
-
-  // check if the key exists
-  Node* cur = hash_table[hashed_key];
-
-  if (cur == NULL) {
+char* Get(Tree** root, char* key) {
+  if (*root == NULL) {
     return NULL;
   }
 
-  // if it does, find if the key inside the linked list exists
-  Node** res = Search(&cur, key);
+  int cmp = strcmp(key, (*root)->key);
 
-  if (res == NULL) {
-    return NULL;
+  if (cmp == 0) {
+    return (*root)->value;
   }
 
-  // else return the value
-  return (*res)->value;
+  if (cmp < 0) {
+    return Get(&((*root)->left), key);
+  } else {
+    return Get(&((*root)->right), key);
+  }
 }
 
 void load_cmd(char** cmd, char* buf) {
@@ -205,33 +166,8 @@ void load_cmd(char** cmd, char* buf) {
   }
 }
 
-void DeleteItem(Node** hash_table, char* key) {
-  // get the hashed key
-  unsigned int hashed_key = hash(key);
-
-  // check if the key exists
-  Node* cur = hash_table[hashed_key];
-
-  if (cur == NULL) {
-    return;
-  }
-
-  // if it does, find if the key inside the linked list exists
-  Node** res = Search(&cur, key);
-
-  if (res == NULL) {
-    return;
-  }
-
-  // else remove it
-  Delete(res, 0);
-
-  // update the hash table
-  hash_table[hashed_key] = cur;
-}
-
 int main(void) {
-  Node** fruits = CreateTable();
+  Tree* fruits = NULL;
 
   while (1) {
     char buf[256];
@@ -253,15 +189,15 @@ int main(void) {
     }
 
     if (strcmp(cmds[0], "insert") == 0 && cmds[1] != NULL && cmds[2] != NULL) {
-      Set(fruits, cmds[1], cmds[2]);
+      Set(&fruits, cmds[1], cmds[2]);
     }
 
     if (strcmp(cmds[0], "delete") == 0 && cmds[1] != NULL) {
-      DeleteItem(fruits, cmds[1]);
+      DeleteItem(&fruits, cmds[1]);
     }
 
     if (strcmp(cmds[0], "search") == 0 && cmds[1] != NULL) {
-      char* res = Get(fruits, cmds[1]);
+      char* res = Get(&fruits, cmds[1]);
       if (res != NULL) {
         printf("%s\n", res);
 
@@ -271,5 +207,5 @@ int main(void) {
     }
   }
 
-  CleanUp(fruits);
+  CleanUp(&fruits);
 }
