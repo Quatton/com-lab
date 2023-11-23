@@ -1,4 +1,5 @@
-# import numpy as np
+import numpy as np
+
 # let's not use numpy
 
 # i'm reading https://lucidar.me/en/mathematics/least-squares-fitting-of-circle/
@@ -36,20 +37,13 @@
 # ...
 # [x_n y_n 1]       [x_n^2 + y_n^2]
 
-# "ideally" there should be a set of (p, q, s)
-# that satisfies all the equations if there were three points
-
-# wait a minute
-# I could've just solve the equation
-# as if there were three points
-
 
 def solve_eq(X: list[float], Y: list[float]) -> tuple[float, float, float]:
     # [x_1 y_1 1]
     A = [[X[i], Y[i], 1] for i in range(len(X))]
     # [x_1^2 + y_1^2]
     B = [[X[i] ** 2 + Y[i] ** 2] for i in range(len(X))]
-    A_inv = inverse(A)
+    A_inv = pseudo_inverse(A)
     [p, q, s] = transpose(mult(A_inv, B))[0]
 
     a = p / 2
@@ -57,6 +51,12 @@ def solve_eq(X: list[float], Y: list[float]) -> tuple[float, float, float]:
     r = (s + a**2 + b**2) ** 0.5
 
     return (a, b, r)
+
+
+def pseudo_inverse(m: list[list[float]]) -> list[list[float]]:
+    mt = transpose(m)
+    pim = mult(mt, inverse(mult(m, mt)))
+    return pim
 
 
 # stolen from kadai6
@@ -148,21 +148,35 @@ def convert_to_2f(x):
     return f"{x:.2f}"
 
 
-def main():
-    N = 3
+import numpy.typing as npt
 
+
+def least_square_circle(
+    all_points: npt.NDArray[np.float64],
+) -> tuple[float, float, float]:
     X = []
     Y = []
 
-    # take N points
-    for _ in range(N):
-        x, y = map(float, input().split(" "))
-        X.append(x)
-        Y.append(y)
+    for point in all_points:
+        X.append(point[0])
+        Y.append(point[1])
 
-    (a, b, r) = solve_eq(X, Y)
+    cx, cy, r = solve_eq(X, Y)
 
-    print(f"{a} {b} {r}")
+    return cx, cy, r
+
+
+def main():
+    point_count = int(input())
+    all_coords = []
+    for i in range(point_count):
+        coords = list(map(float, input().split(" ")))
+        all_coords.append(coords)
+    all_coords = np.array(all_coords)
+    cx, cy, r = least_square_circle(all_coords)
+    print(f"{cx:.2f}")
+    print(f"{cy:.2f}")
+    print(f"{r:.2f}")
 
 
 if __name__ == "__main__":
