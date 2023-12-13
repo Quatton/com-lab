@@ -1,63 +1,62 @@
 (import (rnrs) (srfi :41))
 
-(define triple-index
-  (stream-cons (list 0 0 0)
-    (stream-map
-      (lambda (x)
-        (let ((i (car x)) (j (cadr x)) (k (caddr x)))
-          ;k++ したいが、jがついて来られない場合は j++ する
-          (if (= k j)
-            (list i 0 (+ k 1))
-            ;j++ したいが、iがついて来られない場合は i++ する
-            (if (= j i)
-              (list 0 (+ j 1) k)
-              (list (+ i 1) j k)
-            )
-          )
+(define (range low high)
+  (if (> low high)
+      stream-null
+      (stream-cons low (range (+ low 1) high))))
 
-        )
-      )
-      triple-index
-    )
-  )
-)
+; (define (triples s t u)
+;   (stream-cons
+;     (list (stream-car s) (stream-car t) (stream-car u))
+;     (stream-append
+;       (
+;       (triples (stream-cdr s) (stream-cdr t) (stream-cdr u))
+;     )
+;   )
+; )
+
+(define (interleave s1 s2)
+  (if (stream-null? s1)
+      s2
+      (stream-cons (stream-car s1)
+      (interleave s2 (stream-cdr s1)))))
+
+(define (pairs s t)
+  (stream-cons 
+    (list (stream-car s) (stream-car t)) 
+    (interleave ;;ここだけ先ほどのプログラムから変更する。
+      (stream-map (lambda (x) (list (stream-car s) x))
+                  (stream-cdr t))
+      (pairs (stream-cdr s) (stream-cdr t)))))
 
 (define (triples s t u)
-    (stream-map
-      (lambda (x)
-        (let ((i (car x)) (j (cadr x)) (k (caddr x)))
-          (list (stream-ref s i) (stream-ref t j) (stream-ref u k))
-        )
-      )
-      triple-index
-    )
-)
+  (stream-cons
+    (list (stream-car s) (stream-car t) (stream-car u))
+    (interleave
+      (stream-map (lambda (ptu) (list (stream-car s) (car ptu) (cadr ptu)))
+                  (pairs t (stream-cdr u)))
+      (triples (stream-cdr s) (stream-cdr t) (stream-cdr u)))))
 
-(define (int n) (stream-cons n (int (+ n 1))))
+(define integers (range 1 +inf.0))
+
+(define intriples
+  (triples integers integers integers))
 
 (define pythagorean-triples
   (stream-filter
-    (lambda (x)
-      (let ((a (car x)) (b (cadr x)) (c (caddr x)))
-        (= (+ (* a a) (* b b)) (* c c))
+    (lambda (x) (
+      let (
+          (a (car x))
+          (b (cadr x))
+          (c (caddr x))
+          )
+        (and (= (+ (* a a) (* b b)) (* c c)))
       )
     )
-    (triples (int 1) (int 1) (int 1))
+    intriples
   )
 )
 
-
-
 (stream-ref pythagorean-triples 0)
-(stream-ref pythagorean-triples 1)
 (stream-ref pythagorean-triples 2)
-(stream-ref pythagorean-triples 3)
-(stream-ref pythagorean-triples 4)
-(stream-ref pythagorean-triples 5)
-(stream-ref pythagorean-triples 6)
-(stream-ref pythagorean-triples 7)
-(stream-ref pythagorean-triples 8)
-(stream-ref pythagorean-triples 9)
-(stream-ref pythagorean-triples 10)
-(stream-ref pythagorean-triples 20)
-(stream-ref pythagorean-triples 30)
+  

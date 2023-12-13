@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 # let's not use numpy
 
@@ -29,13 +30,16 @@ import numpy as np
 # then
 # p * x_i + q * y_i + s = x_i^2 + y_i^2
 
-# now we have a set of "linear equations"
-# we can write it in matrix form
-# [x_1 y_1 1] [p]   [x_1^2 + y_1^2]
-# [x_2 y_2 1] [q] = [x_2^2 + y_2^2]
-# [x_3 y_3 1] [s]   [x_3^2 + y_3^2]
-# ...
-# [x_n y_n 1]       [x_n^2 + y_n^2]
+# now we know
+# p * sum(x_i) + q * sum(y_i) + n * s = sum(x_i^2 + y_i^2)
+# p * sum(x_i^2) + q * sum(x_i * y_i) + s * sum(x_i) = sum(x_i^3 + x_i * y_i^2)
+# p * sum(x_i * y_i) + q * sum(y_i^2) + s * sum(y_i) = sum(x_i^2 * y_i + y_i^3)
+
+# now we have 3 equations and 3 unknowns
+# we can solve this with matrix
+# [sum(x_i)         sum(y_i)            n       ] [p]   [sum(x_i^2 + y_i^2)         ]
+# [sum(x_i^2)       sum(x_i * y_i)      sum(x_i)] [q] = [sum(x_i^3 + x_i * y_i^2)   ]
+# [sum(x_i * y_i)   sum(y_i^2)          sum(y_i)] [s]   [sum(x_i^2 * y_i + y_i^3)   ]
 
 
 def solve_eq(X: list[float], Y: list[float]) -> tuple[float, float, float]:
@@ -43,8 +47,20 @@ def solve_eq(X: list[float], Y: list[float]) -> tuple[float, float, float]:
     A = [[X[i], Y[i], 1] for i in range(len(X))]
     # [x_1^2 + y_1^2]
     B = [[X[i] ** 2 + Y[i] ** 2] for i in range(len(X))]
-    A_inv = pseudo_inverse(A)
-    [p, q, s] = transpose(mult(A_inv, B))[0]
+
+    sum_x = sum(X)
+    sum_y = sum(Y)
+    sum_x2 = sum([x**2 for x in X])
+    sum_y2 = sum([y**2 for y in Y])
+    sum_xy = sum([x * y for x, y in zip(X, Y)])
+    sum_xx2y2 = sum([x**3 + x * y**2 for x, y in zip(X, Y)])
+    sum_yx2y2 = sum([x**2 * y + y**3 for x, y in zip(X, Y)])
+    sum_x2y2 = sum([x**2 + y**2 for x, y in zip(X, Y)])
+
+    # let's make a matrix
+    A = [[sum_x, sum_y, len(X)], [sum_x2, sum_xy, sum_x], [sum_xy, sum_y2, sum_y]]
+    B = [[sum_x2y2], [sum_xx2y2], [sum_yx2y2]]
+    p, q, s = flatten(mult(pseudo_inverse(A), B))
 
     a = p / 2
     b = q / 2
@@ -160,6 +176,10 @@ def least_square_circle(
     for point in all_points:
         X.append(point[0])
         Y.append(point[1])
+
+    while len(X) < 3:
+        X.append(random.random())
+        Y.append(random.random())
 
     cx, cy, r = solve_eq(X, Y)
 
