@@ -1,8 +1,8 @@
   .globl mystrcmp
 
 mystrcmp:
-  addi sp, sp, -4
-  sw ra, 0(sp)
+  addi sp, sp, -16
+  sd ra, 0(sp)
   call loop
 
 loop:
@@ -17,6 +17,6 @@ loop:
 
 end:
   ld ra, 0(sp)
-  addi sp, sp, 4
+  addi sp, sp, 16
   sub a0, a3, a4
   ret
