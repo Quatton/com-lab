@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int mystrlen(char* s);
 void mystrcpy(char* s1, char* s2);
@@ -12,7 +13,7 @@ int main() {
 
   int pass1 = mystrlen(s);
 
-  mystrcat(s, s2);
+  strcat(s, s2);
   int pass3 = mystrlen(s);
 
   printf("pass1: %d, expected: %d\n", pass1, 6);
