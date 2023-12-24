@@ -13,10 +13,10 @@ int main() {
 
   int pass1 = mystrlen(s);
 
-  strcat(s, s2);
+  char* new = mystrcat(s, s2);
   int pass3 = mystrlen(s);
 
   printf("pass1: %d, expected: %d\n", pass1, 6);
-  printf("pass2: %s, expected: %s\n", s, "123456789");
+  printf("pass2: %s, expected: %s\n", new, "123456789");
   printf("pass3: %d, expected: %d\n", pass3, 9);
 }
