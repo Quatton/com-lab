@@ -6,7 +6,6 @@ mystrlen:
   addi sp, sp, -16
   sw ra, 0(sp)
   li a4, 0
-  # call .loop
 
 .loop:
   lbu t0, 0(a0)
@@ -49,14 +48,16 @@ mystrcat:
   # a1 = src
 
   addi sp, sp, -16
-  sw ra, 0(sp)
+  sd a0, 0(sp)
+  sw ra, 8(sp)
 
   mv a2, a0
   call mystrlen
   add a0, a0, a2
 
-  
   call mystrcpy
-  lw ra, 0(sp)
+
+  ld a0, 0(sp)
+  lw ra, 8(sp)
   addi sp, sp, 16
   jr ra
