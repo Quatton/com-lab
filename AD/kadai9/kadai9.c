@@ -3,279 +3,165 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define SIZE 32767
+#define SIZE 1000
+#define INF INT_MAX
 
-// copied from kadai1
-typedef struct node {
-  char* value;
-  struct node* less;
-} Node;
+int reverse_lookup(char lookup[][100], char *name) {
+  // this looks so suboptimal lmao but let's accept it
 
-Node* NewNode(char* value) {
-  Node* head = (Node*)malloc(sizeof(Node));
-  head->value = malloc(strlen(value) + 1);
-  strcpy(head->value, value);
-  head->less = NULL;
-
-  return head;
-}
-
-void Prepend(Node** list, char* value) {
-  Node* new = (Node*)malloc(sizeof(Node));
-  new->value = malloc(strlen(value) + 1);
-  strcpy(new->value, value);
-  new->less = *list;
-  *list = new;
-  // printf("%s\n", new->value);
-}
-
-void Print(Node** list) {
-  if (*list == NULL) {
-    printf("\n");
-    return;
-  }
-  printf("%s\n", (*list)->value);
-  if ((*list)->less != NULL) {
-    Print(&((*list)->less));
-  }
-}
-
-unsigned int hash(char* key) {
-  unsigned int hash_value = 0;
-
-  int key_length = strlen(key);
-
-  for (int i = 0; i < key_length; i++) {
-    hash_value = hash_value * 37 + key[i];
-  }  // basically a base 37 number
-
-  hash_value = hash_value % SIZE;
-
-  return hash_value;
-}
-
-void alloc_and_setup(char** lookup, int idx, char* value) {
-  if (lookup[idx] == NULL) {
-    // printf("setting up %d: %s\n", idx, value);
-    lookup[idx] = malloc(strlen(value) + 1);
-    strcpy(lookup[idx], value);
-    return;
-  }
-}
-
-void load_cmd(char** lookup, int** table, char* buf) {
-  // basically split
-  char* token = strtok(buf, " ");
-  int i = 0;
-  unsigned int node1 = 0;
-  unsigned int node2 = 0;
-
-  // https://www.educative.io/answers/splitting-a-string-using-strtok-in-c
-  // 2. Extracting all possible tokens
-  while (token != NULL) {
-    if (i == 0) {
-      node1 = hash(token);
-      if (table[node1] == NULL) table[node1] = calloc(SIZE, sizeof(int));
-      alloc_and_setup(lookup, node1, token);
-    } else if (i == 1) {
-      node2 = hash(token);
-      if (table[node2] == NULL) table[node2] = calloc(SIZE, sizeof(int));
-      alloc_and_setup(lookup, node2, token);
-    } else if (i == 2) {
-      table[node1][node2] = atoi(token);
+  for (int i = 0; i < SIZE; i++) {
+    if (strcmp(lookup[i], name) == 0) {
+      return i;
     }
+    // if not found, insert it at the first empty spot
+    // in other words, if found empty spot before found the name
+    if (lookup[i][0] == '\0') {
+      strcpy(lookup[i], name);
+      return i;
+    }
+  }
+
+  return -1;  // but shouldn't reach here anyway
+}
+
+void load_graph(FILE *ptr, int graph[][SIZE], char lookup[][100]) {
+  char line[100];
+
+  // get each buffer of size 100 into line
+  while (fgets(line, 100, ptr) != NULL) {
+    // A B 3
+    // read the first token
+
+    char *token = strtok(line, " ");
+
+    // get the index of the token
+    int index = reverse_lookup(lookup, token);
+
     token = strtok(NULL, " ");
-    i++;
-  }
+    int index2 = reverse_lookup(lookup, token);
 
-  // printf("loaded %d: %s, %d: %s, %d\n", node1, lookup[node1], node2,
-  //        lookup[node2], table[node1][node2]);
+    token = strtok(NULL, " ");
+    int weight = atoi(token);
+
+    // insert the weight into the graph
+    graph[index][index2] = weight;
+  }
 }
 
-void free_table(char** lookup, int** graph) {
-  for (int i = 0; i < SIZE; i++) {
-    free(lookup[i]);
-  }
-  free(lookup);
+int min_dist(int dist[], int sptSet[], int size) {
+  int min = INF;
+  int min_index;
 
-  for (int i = 0; i < SIZE; i++) {
-    free(graph[i]);
-  }
-  free(graph);
-}
-
-int pick_min_index(int* dist, int* spt) {
-  int min = INT_MAX;
-  int min_index = -1;
-
-  for (int i = 0; i < SIZE; i++) {
-    if (spt[i] != 0) continue;
-    if (spt[i] < min) {
+  for (int i = 0; i < size; i++) {
+    if (sptSet[i] == 0 && dist[i] <= min) {
+      min = dist[i];
       min_index = i;
-      min = spt[i];
     }
   }
 
   return min_index;
 }
 
-void dijk(int** graph, int start, int end, Node** node, char** name_lookup) {
-  // setup
-
-  int COUNT = 0;
+void dijk(int graph[][SIZE], int src, int dest, int size, char lookup[][100]) {
+  int sptSet[SIZE];
   int dist[SIZE];
-  int spt[SIZE];     // 1 = included, 0 = not included, -1 = not in graph
-  int parent[SIZE];  // we will traverse this to find the path;
-  int* lookup = calloc(SIZE, sizeof(int));
+  int parents[SIZE];
+  int res[SIZE];
 
-  // debug
-  // for (int i = 0; i < SIZE; i++) {
-  //   if (graph[i] != NULL) {
-  //     for (int j = 0; j < SIZE; j++) {
-  //       if (graph[i][j] != 0) printf("%d ", graph[i][j]);
-  //     }
-  //     printf("\n");
-  //   }
-  // }
-
-  for (int i = 0; i < SIZE; i++) {
-    parent[i] = -1;
-    if (graph[i] == NULL) {
-      spt[i] = -1;
-      dist[i] = INT_MAX;
-      continue;
-    }
-    spt[i] = 0;
-    dist[i] = INT_MAX;
-    lookup[COUNT] = i;
-    COUNT++;  // it will be constant from now. allow me.
+  // initialize
+  for (int i = 0; i < size; i++) {
+    sptSet[i] = 0;
+    dist[i] = INF;
+    parents[i] = -1;
+    res[i] = -1;
   }
 
-  // printf("%d\n", COUNT);
+  dist[src] = 0;
+  res[0] = dest;
+  int res_size = 1;
 
-  lookup = realloc(lookup, sizeof(int) * COUNT);
+  for (int _ = 0; _ < size; _++) {
+    int u = min_dist(dist, sptSet, size);
 
-  // for (int i = 0; i < COUNT; i++) {
-  //   printf("%s ", name_lookup[lookup[i]]);
-  // }
-  // printf("\n");
+    sptSet[u] = 1;
 
-  dist[start] = 0;  // so it will be picked first
+    for (int j = 0; j < size; j++) {
+      if (sptSet[j] == 0 &&                 // unvisited
+          graph[u][j] != INF &&             // edge exists
+          dist[u] + graph[u][j] < dist[j])  // this shortcuts the original path
+      {
+        dist[j] = dist[u] + graph[u][j];
 
-  // loop through the count
-  for (int count = 0; count < COUNT - 1; count++) {
-    int idx = pick_min_index(dist, spt);  // will be start first;
-
-    if (idx == end) {
-      break;  // yay
-    }
-
-    spt[idx] = 1;  // marked as picked
-
-    for (int v = 0; v < COUNT; v++) {
-      int vtx = lookup[v];
-
-      if (!spt[vtx]                // not visited
-          && graph[idx][vtx]       // exists in the graph (non-zero)
-          && dist[idx] != INT_MAX  // overflow prevention
-          && dist[idx] + graph[idx][vtx] < dist[vtx]  // dist[vtx] should be min
-      ) {  // this means that we found a new path shorter
-
-        dist[vtx] = dist[idx] + graph[idx][vtx];
-        // records who got them to the destination
-        parent[vtx] = idx;
+        parents[j] = u;
       }
     }
   }
 
-  if (parent[end] == -1) return;
-
-  // let's traverse the parent
-  int curr_idx = end;
-  while (curr_idx != start) {
-    Prepend(node, name_lookup[parent[curr_idx]]);
-    // printf("curr_idx: %d", curr_idx);
-    curr_idx = parent[curr_idx];
+  while (res[res_size - 1] != src && res[res_size - 1] != -1) {
+    res[res_size] = parents[res[res_size - 1]];
+    res_size++;
   }
 
-  free(lookup);
-}
-
-void FreeNode(Node** node) {
-  if (*node == NULL) {
+  if (res[res_size - 1] == -1) {
+    printf("(no route)\n");
     return;
   }
 
-  if ((*node)->less != NULL) {
-    FreeNode(&((*node)->less));
+  for (int i = res_size - 1; i >= 0; i--) {
+    printf("%s\n", lookup[res[i]]);
   }
-
-  free((*node)->value);
-  free(*node);
-  *node = NULL;
 }
 
-int main(void) {
-  char filename[50];
+int main() {
+  FILE *ptr;
+
+  char filename[100];
 
   scanf("%s", filename);
 
-  FILE* fptr;
+  ptr = fopen(filename, "r");
 
-  char buffer[250];
+  if (ptr == NULL) {
+    return 1;
+  }
 
-  fptr = fopen(filename, "r");
-
-  // Adjacency Matrix
-  int** graph = malloc(sizeof(int*) * SIZE);
-  char** name_look_up = malloc(sizeof(char*) * SIZE);
+  char lookup[SIZE][100];
 
   for (int i = 0; i < SIZE; i++) {
-    name_look_up[i] = NULL;
+    lookup[i][0] = '\0';
   }
+
+  int graph[SIZE][SIZE];
+
+  for (int i = 0; i < SIZE; ++i) {
+    for (int j = 0; j < SIZE; ++j) {
+      graph[i][j] = (i == j) ? 0 : INF;
+    }
+  }
+
+  char src[100];
+  char dest[100];
+  char temp[100];
+
+  // there must be a better way lmao
+  fgets(temp, 100, ptr);
+  sscanf(temp, "%[^\n]", src);
+
+  fgets(temp, 100, ptr);
+  sscanf(temp, "%[^\n]", dest);
+
+  load_graph(ptr, graph, lookup);
+
+  int s = reverse_lookup(lookup, src);
+  int d = reverse_lookup(lookup, dest);
+
+  int GRAPH_SIZE = 0;
 
   for (int i = 0; i < SIZE; i++) {
-    graph[i] = NULL;
+    if (lookup[i][0] != '\0') {
+      GRAPH_SIZE++;
+    }
   }
 
-  int start = -1;
-  int end = -1;
-
-  while (fgets(buffer, sizeof(buffer), fptr)) {
-    char readed[250];
-
-    sscanf(buffer, "%[^\n]s", readed);
-
-    if (start == -1) {
-      start = hash(readed);
-      name_look_up[start] = malloc(strlen(readed) + 1);
-      strcpy(name_look_up[start], readed);
-      continue;
-    }
-    if (end == -1) {
-      end = hash(readed);
-      name_look_up[end] = malloc(strlen(readed) + 1);
-      strcpy(name_look_up[end], readed);
-      continue;
-    }
-
-    load_cmd(name_look_up, graph, readed);
-  }
-
-  // for (int p = 0; p < 80; p++) {
-  //   if (name_look_up[p]) {
-  //     printf("%d: %s; ", p, name_look_up[p]);
-  //   }
-  // }
-  // printf("\n");
-
-  Node* path = NewNode(name_look_up[end]);
-
-  dijk(graph, start, end, &path, name_look_up);
-
-  Print(&path);
-
-  FreeNode(&path);
-
-  free_table(name_look_up, graph);
+  dijk(graph, s, d, GRAPH_SIZE, lookup);
 }
