@@ -36,21 +36,25 @@ typedef struct _Coord {
 
 void LCS(char* x, char* y, int i, int j, Coord*** table) {
   Coord* coord = calloc(1, sizeof(Coord));
+  table[i][j] = coord;
+
   if (i == 0 || j == 0) {
+    coord->x = -1;
+    coord->y = -1;
     coord->val = '\0';
     coord->len = 0;
-    table[i][j] = coord;
+    return;
   }
 
-  if (x[i] == y[j]) {
-    coord->val = x[i];
+  if (x[i - 1] == y[j - 1]) {
+    coord->val = x[i - 1];
     coord->x = i - 1;
     coord->y = j - 1;
     coord->len = (table[i - 1][j - 1])->len + 1;
     return;
   }
 
-  if (x[i] != y[j]) {
+  if (x[i - 1] != y[j - 1]) {
     coord->val = '\0';
 
     if ((table[i - 1][j])->len > (table[i][j - 1])->len) {
@@ -68,8 +72,10 @@ void LCS(char* x, char* y, int i, int j, Coord*** table) {
 }
 
 int main() {
-  char* x = "ABCBDAB";
-  char* y = "BDCABA";
+  char* x =
+      "AFFEACEDCAKDOPFODGHNDFSMAPOKMFSNHDVKJACSKLDVNSFKADSNDJNFWJUVNWIVBETW";
+  char* y =
+      "DDFCFCBDAACSLVMDKDCSAXLCSMKLODFJENMDSLKPFWOJKEIKDSKFOJDWEOJNEDFWKMONDVS";
 
   int x_len = strlen(x);
   int y_len = strlen(y);
@@ -79,4 +85,55 @@ int main() {
   for (int i = 0; i < x_len + 1; i++) {
     table[i] = calloc(y_len + 1, sizeof(Coord*));
   }
+
+  for (int i = 0; i < x_len + 1; i++) {
+    for (int j = 0; j < y_len + 1; j++) {
+      LCS(x, y, i, j, table);
+    }
+  }
+
+  // print table
+  // for (int i = -1; i < x_len + 1; i++) {
+  //   printf("%c ", i <= 0 ? 'e' : x[i - 1]);
+  //   if (i == -1) {
+  //     for (int j = 0; j < y_len + 1; j++) {
+  //       printf("%c ", j <= 0 ? 'e' : y[j - 1]);
+  //     }
+  //     printf("\n");
+  //     continue;
+  //   }
+  //   for (int j = 0; j < y_len + 1; j++) {
+  //     printf("%c ", table[i][j]->val);
+  //   }
+  //   printf("\n");
+  // }
+
+  // loop back
+  Coord* cur = table[x_len][y_len];
+
+  char* str = calloc(cur->len + 1, sizeof(char));
+  char* p = str + cur->len;
+
+  *p = '\0';
+  p--;
+  while (cur->x != -1 && cur->y != -1) {
+    if (cur->val != '\0') {
+      *p = cur->val;
+      p--;
+    }
+    cur = table[cur->x][cur->y];
+  }
+
+  printf("%s\n", str);
+
+  free(str);
+  for (int i = 0; i < x_len + 1; i++) {
+    for (int j = 0; j < y_len + 1; j++) {
+      free(table[i][j]);
+    }
+    free(table[i]);
+  }
+  free(table);
+
+  return 0;
 }
